@@ -17,6 +17,21 @@ const getAllLaunches = () => {
   return Array.from(launches.values());
 };
 
+const createNewLaunch = (launch) => {
+  const allFlights = Array.from(launches.keys());
+  const flightNumber = allFlights[allFlights.length - 1] + 1;
+  const newLaunch = {
+    ...launch,
+    flightNumber,
+    customers: ['NASA', 'ZTM'],
+    upcoming: true,
+    success: true,
+  };
+  launches.set(flightNumber, newLaunch);
+  return newLaunch;
+};
+
 module.exports = {
   getAllLaunches,
+  createNewLaunch,
 };
