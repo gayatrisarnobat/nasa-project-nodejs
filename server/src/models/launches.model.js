@@ -13,6 +13,10 @@ const launch = {
 
 launches.set(launch.flightNumber, launch);
 
+const existsWithLaunchId = (flightNumber) => {
+  return launches.has(flightNumber);
+};
+
 const getAllLaunches = () => {
   return Array.from(launches.values());
 };
@@ -31,7 +35,16 @@ const createNewLaunch = (launch) => {
   return newLaunch;
 };
 
+const abortLaunch = (flightNumber) => {
+  const aborted = launches.get(flightNumber);
+  aborted.upcoming = false;
+  aborted.success = false;
+  return aborted;
+};
+
 module.exports = {
+  existsWithLaunchId,
   getAllLaunches,
   createNewLaunch,
+  abortLaunch,
 };
