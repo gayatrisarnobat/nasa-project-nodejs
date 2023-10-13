@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { parse } = require('csv-parse');
 
+const planets = require('./planets.mongo');
+
 const habitablePlanets = [];
 
 const isHabitablePlanet = (planet) => {
@@ -15,7 +17,9 @@ const isHabitablePlanet = (planet) => {
 
 const loadPlanetsData = () => {
   return new Promise((resolve, reject) => {
-    fs.createReadStream(path.join(__dirname, '..', '..', 'data/planets-data.csv'))
+    fs.createReadStream(
+      path.join(__dirname, '..', '..', 'data/planets-data.csv')
+    )
       .pipe(
         parse({
           comment: '#',
