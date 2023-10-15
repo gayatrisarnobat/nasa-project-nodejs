@@ -1,6 +1,7 @@
-// const launches = require('./launches.mongo');
+const launchesDb = require('./launches.mongo');
+const planetsDb = require('./planets.mongo');
 
-const launches = new Map();
+const DEFAULT_FLIGHT_NUMBER = 100;
 
 const launch = {
   flightNumber: 100,
@@ -13,34 +14,66 @@ const launch = {
   success: true,
 };
 
-launches.set(launch.flightNumber, launch);
-
-const existsWithLaunchId = (flightNumber) => {
-  return launches.has(flightNumber);
+const saveLaunch = async (launch) => {
+  const planet = await planetsDb.findOne({
+    keplerName: launch.target,
+  });
+  if (!planet) {
+    throw new Error('No matching planet found')
+  }
+  await launchesDb.findOneAndUpdate({
+    flightNumber: launch.flightNumber,
+  }, launch, {
+    upsert: true,
+  });
 };
 
-const getAllLaunches = () => {
-  return Array.from(launches.values());
+saveLaunch(launch);
+
+const getLatestFlightNumber = async () => {
+  const latestLaunch = await launchesDb
+    .findOne({})
+    .sort('-flightNumber');
+  if (!latestLaunch) {
+    return DEFAULT_FLIGHT_NUMBER;
+  }
+  return latestLaunch.flightNumber;
 };
 
-const createNewLaunch = (launch) => {
-  const allFlights = Array.from(launches.keys());
-  const flightNumber = allFlights[allFlights.length - 1] + 1;
+const existsWithLaunchId = async (flightNumber) => {
+  return await launchesDb.findOne({
+    flightNumber,
+  });
+};
+
+const getAllLaunches = async () => {
+  return await launchesDb.find({}, {
+    __v: 0,
+    _id: 0,
+  })
+};
+
+const createNewLaunch = async (launch) => {
+  const newFlightNumber = await getLatestFlightNumber() + 1;
   const newLaunch = {
     ...launch,
-    flightNumber,
+    flightNumber: newFlightNumber,
     customers: ['NASA', 'ZTM'],
     upcoming: true,
     success: true,
   };
-  launches.set(flightNumber, newLaunch);
+  await saveLaunch(newLaunch);
   return newLaunch;
 };
 
-const abortLaunch = (flightNumber) => {
-  const aborted = launches.get(flightNumber);
+const abortLaunch = async (flightNumber) => {
+  const aborted = await launchesDb.findOne({
+    flightNumber,
+  });
   aborted.upcoming = false;
   aborted.success = false;
+  aborted.isNew = false;
+  await saveLaunch(aborted);
   return aborted;
 };
 

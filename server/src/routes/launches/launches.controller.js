@@ -5,11 +5,11 @@ const {
   existsWithLaunchId,
 } = require('../../models/launches.model');
 
-const httpGetAllLaunches = (req, res) => {
-  return res.status(200).json(getAllLaunches());
+const httpGetAllLaunches = async (req, res) => {
+  return res.status(200).json(await getAllLaunches());
 };
 
-const httpCreateNewLaunch = (req, res) => {
+const httpCreateNewLaunch = async (req, res) => {
   const launch = req.body;
   if (!launch.mission || !launch.rocket || !launch.launchDate || !launch.target) {
     return res.status(400).json({ error: 'Missing required launch properties' });
@@ -19,17 +19,17 @@ const httpCreateNewLaunch = (req, res) => {
   if (isNaN(launch.launchDate)) {
     return res.status(400).json({ error: 'Invalid launch date' });
   }
-  return res.status(201).json(createNewLaunch(launch));
+  return res.status(201).json(await createNewLaunch(launch));
 };
 
-const httpDeleteLaunch = (req, res) => {
+const httpDeleteLaunch = async (req, res) => {
   const launchId = +req.params.flightNumber;
-  if (!existsWithLaunchId(launchId)) {
+  if (!await existsWithLaunchId(launchId)) {
     return res.status(404).json({
       error: 'Launch not found',
     });
   }
-  const aborted = abortLaunch(launchId);
+  const aborted = await abortLaunch(launchId);
   return res.status(200).json(aborted);
 };
 

@@ -1,8 +1,7 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSaveMode": "file",
-  "files.autoSave": "onFocusChange",
+  "editor.defaultFormatter": "vscode.typescript-language-features",
   "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
-  "editor.formatOnType": true
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
 }
