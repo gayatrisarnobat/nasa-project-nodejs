@@ -67,14 +67,13 @@ const createNewLaunch = async (launch) => {
 };
 
 const abortLaunch = async (flightNumber) => {
-  const aborted = await launchesDb.findOne({
+  const aborted = await launchesDb.updateOne({
     flightNumber,
+  }, {
+    upcoming: false,
+    success: false,
   });
-  aborted.upcoming = false;
-  aborted.success = false;
-  aborted.isNew = false;
-  await saveLaunch(aborted);
-  return aborted;
+  return aborted.modifiedCount === 1;
 };
 
 module.exports = {
