@@ -6,7 +6,7 @@ const {
 } = require('../../models/launches.model');
 
 const httpGetAllLaunches = async (req, res) => {
-  return res.status(200).json(await getAllLaunches());
+  return res.status(200).json(await getAllLaunches(req.query));
 };
 
 const httpCreateNewLaunch = async (req, res) => {
